@@ -1,0 +1,3 @@
+@startuml
+Restaurant "1" -> "*" MenuItem : has
+@enduml
