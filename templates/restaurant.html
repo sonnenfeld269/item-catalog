@@ -1,0 +1,13 @@
+{% extends "basic.html" %} {% block content %}
+<div class="page-header"><h2>{{restaurant.name}}</h2></div>
+<h3>Menu</h3>
+
+<div class="list-group">
+  {% for m in menuItems %}
+  <a href="#" class="list-group-item">
+    <h4 class="list-group-item-heading">{{m.name}}</h4>
+    <p class="list-group-item-text">{{m.description}}</p>
+  </a>
+  {% endfor %}
+</div>
+{% endblock content %}
