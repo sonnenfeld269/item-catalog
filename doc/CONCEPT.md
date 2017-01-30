@@ -5,9 +5,16 @@
   - [Roadmap](#roadmap)
   - [Implementation](#implementation)
     - [Database Layer](#database-layer)
+      - [Model](#model)
+      - [Database Setup](#database-setup)
+      - [Implement ORM](#implement-orm)
+    - [View Layer](#view-layer)
     - [Service Layer](#service-layer)
-      - [Database Service](#database-service)
-      - [Basic Server](#basic-server)
+      - [User Actions](#user-actions)
+      - [Connect to View and Database](#connect-to-view-and-database)
+        - [Connect Service to Database](#connect-service-to-database)
+        - [Connect Service to View](#connect-service-to-view)
+        - [Code-Examples](#code-examples)
 
 # Concept
 
@@ -24,90 +31,138 @@
 
 1. Database Layer
   * Create db-model
-  * Create a [database_setup file](../database_setup.py)
-  * Create a [database_service file](../database_setup.py)
-  * Create a [basic_server.py](../basic_server.py)
+  * Create a [database_setup file](../database_setup.py) using sqlalchemy
+  * Create a [database_service file](../database_setup.py) for crud operations
+  * Connect database with project.py(sever) using [database_service.py](../database_service.py)
+
+3. View Layer
+  * Create html templates like [display_all.html](../templates/display_all.html) using jinja2 inheritance
+    for each crud method.
+  * Inside [project.py](../project.py) we implement the logic and routing
+
+4. Service Layer
+  * Create User Action model or table
+  * Connect Database and View with our app [project.py](../project.py)
+
+5. Use message flashing for handling error messages
+
+6. Implement JSON Endpoints
 
 ## Implementation
 
 ### Database Layer
 
+#### Model
 First we create our model
 
 ![model](model.png)
 
+#### Database Setup
 Now we create a database configuration file with our objects
 
-**database_setup.py**
-```
-import sys
-from sqlalchemy import Column, ForeignKey, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
-from sqlalchemy import create_engine
+Check [database_setup file](../database_setup.py) for code and documentation.
 
-"""The declarative_base will let sqlalchemy know that our classes
-are special alchemy classes that correspondent with our tables in our db
-"""
-Base = declarative_base()
+If we run this file with `python database_setup.py` then it creates our
+**category_item.db** file, which contains our `CREATE` statements.
+7
+#### Implement ORM
 
-class Restaurant(Base):
-    """A restaurant class mapping to our restaurant table
-
-    Args:
-        Base: the parent class doing the mapping by sqlalchemy
-    """
-
-    __tablename__ = 'restaurant'
-
-    name = Column(String(80), nullable = False)
-
-    id = Column(Integer, primary_key = True)
-
-class MenuItem(Base):
-    """A menu item class mapping to our manu_item table
-
-    Args:
-        Base: the parent class doing the mapping by sqlalchemy
-    """
-
-    __tablename__ = 'menu_item'
-
-    name = Column(String(80), nullable = False)
-
-    id = Column(Integer, primary_key = True)
-
-    course =  Column(String(250))
-
-    description = Column(String(250))
-
-    price = Column(String(8))
-
-    restaurant_id = Column(Integer, ForeignKey('restaurant.id'))
-
-    restaurant = relationship(Restaurant)
-
-
-""" create_engine will create a new file to a more robust database like psql"""
-engine = create_engine('sqlite:///restaurantmenu.db')
-
-""" this will go to the database and add the classes as new tables in our database"""
-Base.metadata.create_all(engine)
-```
-
-If we run this file with `python database_setup.py` then it create our
-**restaurantmenu.db** file, which contains our `CREATE` statements.
-
-### Service Layer
-
-#### Database Service
-
-Now we need a module to do CRUD operations on our db. For that we use
-sessions in sqlalchemy. They allow us to call queries and commit them.
+Now we need a module to do CRUD operations on our db. For that we an ORM called
+sqlalchemy. They allow us to call queries and commit them using objects.
 
 Check [database_service file](../database_service.py) for code and documentation.
 
-#### Basic Server
+### View Layer
 
-Now we need to establish a basic server for communication between our server(localhost) and the client(browser).
-Here is the documented [basic_server file](../basic_server.py).
+Flask uses the jinja2 template to render html files.
+
+First we create a parent template [basic.html](../templates/basic.html) and
+then several pages for our user actions.
+
+Check the
+
+  - templates/
+
+directory to see all the templates.
+
+
+### Service Layer
+
+#### User Actions
+
+*Example*
+
+|URL|METHOD           |POST/GET | ACTION |
+|---|-----------------|---------|--------|
+|'/','/items'|showAllData|GET|display all items and categories|
+
+**read as** *If the user goes to the url '/' or '/items' then call the method `showAllData()`*
+
+Here you can see all necessary user actions:
+
+|URL|METHOD           |POST/GET | ACTION |
+|---|-----------------|---------|--------|
+|'/','/items'|showAllData|GET|display all items and categories|
+|'(string:category_name)/items'|showDataByCategory|GET|display items by category|
+|'(string:category_name)/items/new'|createItem|GET/POST|display create item form or submit|
+|'(string:category_name)/items/(int:item_id)'|showItem|GET|display item|
+|'(string:category_name)/items/(int:item_id)/edit'|editItem|GET/POST|display or edit item|
+|'(string:category_name)/items/(int:item_id)/delete'|deleteItem|POST|display or edit item|
+
+#### Connect to View and Database
+
+##### Connect Service to Database
+
+Because we already have setup our ORM we can just use the
+[database_service file](../database_service.py) to call
+the queries we need.
+
+##### Connect Service to View
+
+As a template engine flask uses jinja2. So to map data from our server to html files we can just use `render_template('file.html', *args)`
+
+##### Code-Examples
+
+  1. Implementing **showAllData** action
+
+  ```
+  @app.route('/')
+  @app.route('/items')
+  def showAllData():
+      """Get all items and categories. Calculate the number of items.
+      And pass data to html template
+      """
+
+      # get items and categories from database
+      items = readAllItems()
+      categories = readAllCategories()
+
+      # calculate number of items
+      num_items = len(items)
+
+      # render template passing arguments
+      return render_template("display_all.html", categories = categories, items = items, countItems = num_items)
+  ```
+
+  Above we can see that if the user calls the url */* or */items* then `showAllData()` will be executed.
+
+  communication to **database**, see below
+
+  ```
+  # get items and categories from database
+  items = readAllItems()
+  categories = readAllCategories()
+  ```
+
+  communication to **view**, see below
+
+  ```
+  # render template passing arguments
+  return render_template("display_all.html", categories = categories, items = items, countItems = num_items)
+  ```
+
+  2. Implementing **deleteItem** action
+
+## Message Flashing
+
+## JSON API Endpoints
