@@ -9,45 +9,57 @@ are special alchemy classes that correspondent with our tables in our db
 """
 Base = declarative_base()
 
-class Restaurant(Base):
-    """A restaurant class mapping to our restaurant table
+class Category(Base):
+    """A category class mapping to our category table
 
     Args:
         Base: the parent class doing the mapping by sqlalchemy
     """
 
-    __tablename__ = 'restaurant'
+    __tablename__ = 'category'
 
     name = Column(String(80), nullable = False)
 
     id = Column(Integer, primary_key = True)
 
-class MenuItem(Base):
-    """A menu item class mapping to our manu_item table
+    @property
+    def serialize(self):
+        return {
+            'name': self.name,
+            'id': self.id
+        }
+
+class Item(Base):
+    """An item class mapping to our item table
 
     Args:
         Base: the parent class doing the mapping by sqlalchemy
     """
 
-    __tablename__ = 'menu_item'
+    __tablename__ = 'item'
 
-    name = Column(String(80), nullable = False)
+    title = Column(String(80), nullable = False)
 
     id = Column(Integer, primary_key = True)
-
-    course =  Column(String(250))
 
     description = Column(String(250))
 
-    price = Column(String(8))
+    category_id = Column(Integer, ForeignKey('category.id'))
 
-    restaurant_id = Column(Integer, ForeignKey('restaurant.id'))
+    category = relationship(Category)
 
-    restaurant = relationship(Restaurant)
+    @property
+    def serialize(self):
+        return {
+            'title': self.title,
+            'description': self.description,
+            'id': self.id,
+            'category_id': self.category_id
+        }
 
 
 """ create_engine will create a new file to a more robust database like psql"""
-engine = create_engine('sqlite:///restaurantmenu.db')
+engine = create_engine('sqlite:///category_item.db')
 
 """ this will go to the database and add the classes as new tables in our database"""
 Base.metadata.create_all(engine)
