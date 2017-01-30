@@ -1,0 +1,21 @@
+{% extends "basic.html" %} {% block content %}
+<legend>
+    All Restaurants
+</legend>
+<ul class="list-group">
+    {% for r in restaurants %}
+    <li class="list-group-item">
+        <a href="{{url_for('showRestaurant', restaurant_id=r.id)}}">{{r.name}}</a>
+        <span class="pull-right">
+        <form action="{{url_for('removeRestaurant',restaurant_id=r.id)}}" method="post">
+        <button type="submit" class="btn-link">delete</button>
+       </form>|
+        <form action="{{url_for('removeRestaurant',restaurant_id=r.id)}}" method="post">
+          <a>edit</a>
+        </form>
+      </span>
+
+    </li>
+    {% endfor %}
+</ul>
+{% endblock content %}
