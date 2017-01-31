@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, url_for, redirect, jsonify
+from flask import Flask, render_template, request, url_for, redirect, jsonify, flash
 from database_service import *
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
@@ -16,8 +16,19 @@ def showAllData():
     items = readAllItems()
     categories = readAllCategories()
     num_items = len(items)
-    return render_template("display_all.html", categories = categories,
-                            items = items, countItems = num_items)
+
+    rendered_categories = render_template("category/show_all_categories.html",
+                                           categories = categories)
+
+    rendered_items = render_template("item/show_items.html", items = items,
+                                      categories = categories,
+                                      countItems = num_items)
+
+    return render_template("display_all.html",
+                            categories = rendered_categories,
+                            items = rendered_items)
+
+
 
 @app.route('/<string:category_name>/items')
 def showDataByCategory(category_name):
@@ -27,9 +38,52 @@ def showDataByCategory(category_name):
     items = readItemsByName(category_name)
     categories = readAllCategories()
     num_items = len(items)
-    return render_template("display_all.html", categories = categories,
-                            items = items, countItems = num_items,
-                            category_name=category_name)
+
+    rendered_categories = render_template("category/show_all_categories.html",
+                                           categories = categories)
+
+    rendered_items = render_template("item/show_items.html",
+                                      items = items, categories = categories,
+                                      category_name = category_name,
+                                      countItems = num_items)
+
+    return render_template("display_all.html",
+                            categories = rendered_categories,
+                            items = rendered_items)
+
+@app.route('/items/new', methods=['POST'])
+@app.route('/<string:category_name>/items/new', methods=['POST'])
+def addItem(category_name=None):
+
+        if request.method == "POST":
+            if not category_name:
+                category_name = request.form['selected_category_name']
+
+            category_id=readCategoryByName(category_name).id
+            item = createItem(request.form['title'],request.form['description'],category_id)
+            flash("Item successfully added!", "success")
+            return redirect(url_for('showDataByCategory',category_name=category_name))
+
+@app.route('/<string:category_name>/items/<int:item_id>/edit', methods=['GET','POST'])
+def editItem(category_name, item_id):
+    print "inside edit item"
+    if request.method == "GET":
+        item = readItemById(item_id)
+        return redirect(url_for('showAllCategories',category_name=category_name,selected_item=item))
+        #return "get"
+    else:
+        return "post"
+
+@app.route('/<string:category_name>/items/<int:item_id>/delete', methods=['POST'])
+def removeItem(category_name, item_id):
+    """Deletes an item from the database."""
+
+    # delete item
+    deleteItem(item_id)
+
+    flash("Item successfully deleted!", "success")
+    # redirect to showDataByCategory
+    return redirect(url_for('showDataByCategory',category_name=category_name))
 
 #### Category - API Endpoints
 
@@ -65,31 +119,7 @@ def getAllItemsJSON(category_name = None):
     return jsonify(Items=[i.serialize for i in items])
 
 
-@app.route('/<string:category_name>/items/new', methods=['POST'])
-def addItem(category_name = None):
-    if request.method == "POST":
-        category_id=readCategoryByName(category_name).id
-        item = createItem(request.form['title'],request.form['description'],category_id)
-        return redirect(url_for('showAllCategories',category_name=category_name))
-    else:
-        return redirect(url_for('showAllCategories',category_name=category_name))
 
-@app.route('/<string:category_name>/items/<int:item_id>/edit', methods=['GET','POST'])
-def editItem(category_name, item_id):
-    print "inside edit item"
-    if request.method == "GET":
-        item = readItemById(item_id)
-        return redirect(url_for('showAllCategories',category_name=category_name,selected_item=item))
-        #return "get"
-    else:
-        return "post"
-
-@app.route('/<int:item_id>/delete', methods=['POST'])
-def removeItem(item_id):
-    item = readItemById(item_id)
-    category_name = readCategoryById(item.category_id).name
-    deleteItem(item_id)
-    return redirect(url_for('showAllCategories',category_name=category_name))
 
 #### Configuration
 
@@ -102,5 +132,6 @@ def dbSetup(dbtype,dbname):
 dbSetup("sqlite","category_item.db")
 
 if __name__ == '__main__':
+    app.secret_key = "my_secret_key"
     app.debug = True
     app.run(host='0.0.0.0', port=5000)

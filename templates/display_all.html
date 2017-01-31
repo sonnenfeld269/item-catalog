@@ -2,76 +2,10 @@
 
 <div class="row">
     <div class="col-xs-12 col-md-4 ">
-        <h2>Category</h2>
-        <nav>
-
-            <ul class="nav nav-pills nav-stacked">
-                <li role="presentation" class="bg-info"><a href="{{url_for('showAllData')}}">All</a></li>
-                {% for c in categories %}
-                <li role="presentation"><a href="{{url_for('showDataByCategory',category_name=c.name)}}">{{c.name}}</a></li>
-                {% endfor %}
-            </ul>
-
-        </nav>
+        {{categories|safe}}
     </div>
     <div class="col-xs-12 col-md-8">
-
-        <h2>Items <small>({% if category_name %}{{category_name+', '}}{%endif%}{{ countItems }})</small>
-          <button type="button" class="btn btn-primary btn-xs add-button">Add Item</button>
-        </h2>
-
-        <div class="form">
-            <form method="post" action="{{url_for('addItem',category_name=category_name)}}">
-                <div class="button-section">
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-success btn-xs save-button">Save</button>
-                        <button type="reset" class="btn btn-info btn-xs cancel-button">Cancel</button>
-                    </div>
-                </div>
-                <div class="input-section">
-                    <div class="form-group">
-                        <label>Title:</label>
-                        <input name="title" type="text" class="form-control" id="title">
-                    </div>
-                    <div class="form-group">
-                        <label>Description:</label>
-                        <textarea name="description" type="text" class="form-control" rows="5"></textarea>
-                    </div>
-                </div>
-
-            </form>
-        </div>
-
-
-
-
-
-
-
-        <ul class="list-group">
-            {% for i in items %}
-            <li class="list-group-item">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-10">
-                            <h4 class="list-group-item-heading">
-                              <a href="#">{{i.title}}</a>
-                            </h4>
-                            <p class="list-group-item-text">{{i.description}}</p>
-                        </div>
-                        <div class="col-md-2">
-                            <a href="#" data-toggle="modal" data-title="{{i.title}}" data-desc="{{i.description}}" data-target="#myModal" class="btn btn-warning btn-xs edit-button">edit</a>
-
-                            <form class="item-form-button" method="post" action="{{url_for('removeItem',item_id=i.id)}}">
-                                <button class="btn btn-danger btn-xs">delete</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </li>
-            {% endfor %}
-        </ul>
-
+        {{items|safe}}
     </div>
 </div>
 

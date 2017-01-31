@@ -19,10 +19,16 @@
     <div class="container">
         <div class="row">
             <div class="page-header">
-              <h1>Item Catalog</h1>
+                <h1>Item Catalog</h1>
             </div>
         </div>
         <div class="content">
+          {% for category,message in get_flashed_messages(with_categories=true) %}
+            <div class="alert alert-dismissible alert-{{category}}">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                {{message}}
+            </div>
+            {% endfor %}
             {% block content %} {% endblock content %}
         </div>
 
