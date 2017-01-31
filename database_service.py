@@ -38,15 +38,13 @@ def readItemById(id):
 
 def readItemsByName(category_name):
     category = session.query(Category).filter_by(name=category_name).one()
-    print category.id
     items = session.query(Item).filter_by(category_id=category.id).all()
-    #items = session.query(Item).all()
-
     return items
 
-def updateItem(id, name):
+def updateItem(id, title, description):
     item = session.query(Item).filter_by(id=id).one()
-    item.name = name
+    item.title = title
+    item.description = description
     session.add(item)
     session.commit()
 
@@ -59,7 +57,6 @@ def countItems():
     return session.query(Item).count()
 
 # Category Service Methods
-
 
 def createCategory(name):
     category = Category(name=name)
@@ -135,7 +132,10 @@ def fillDb():
     createCategory("Water")
     createCategory("Land")
     createCategory("Air")
-    createItem("Bird", "Flying in the sky",3)
+    createItem("Cape crow", "The Cape crow or black crow (Corvus capensis) is"
+               " slightly larger than the carrion crow"
+               " and is completely black with a slight gloss of purple in"
+               " its feathers.",3)
     createItem("Ape", "Moving on trees",2)
     createItem("Lion", "Living in dessert",2)
     createItem("Orca", "Swimming in oceans",1)

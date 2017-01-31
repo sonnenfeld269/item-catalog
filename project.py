@@ -40,7 +40,8 @@ def showDataByCategory(category_name):
     num_items = len(items)
 
     rendered_categories = render_template("category/show_all_categories.html",
-                                           categories = categories)
+                                           categories = categories,
+                                           category_name = category_name)
 
     rendered_items = render_template("item/show_items.html",
                                       items = items, categories = categories,
@@ -64,24 +65,29 @@ def addItem(category_name=None):
             flash("Item successfully added!", "success")
             return redirect(url_for('showDataByCategory',category_name=category_name))
 
+@app.route('/items/<int:item_id>/edit', methods=['GET','POST'])
 @app.route('/<string:category_name>/items/<int:item_id>/edit', methods=['GET','POST'])
-def editItem(category_name, item_id):
-    print "inside edit item"
+def editItem(category_name=None, item_id=None):
+    category_name = ""
     if request.method == "GET":
         item = readItemById(item_id)
-        return redirect(url_for('showAllCategories',category_name=category_name,selected_item=item))
-        #return "get"
+        if not category_name:
+            category_name = readCategoryById(item.category_id).name
+        return render_template('item/edit_item.html', item = item)
     else:
-        return "post"
+        updateItem(item_id, request.form['title'], request.form['description'])
+        flash("Item successfully edited!", "success")
+        return redirect(url_for('showDataByCategory',category_name=category_name))
 
+@app.route('/items/<int:item_id>/delete', methods=['POST'])
 @app.route('/<string:category_name>/items/<int:item_id>/delete', methods=['POST'])
-def removeItem(category_name, item_id):
+def removeItem(category_name=None, item_id=None):
     """Deletes an item from the database."""
 
     # delete item
     deleteItem(item_id)
-
     flash("Item successfully deleted!", "success")
+
     # redirect to showDataByCategory
     return redirect(url_for('showDataByCategory',category_name=category_name))
 
