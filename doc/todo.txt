@@ -1,2 +1,1 @@
-* create some crud methods in project.py
-* use template engine
+1. What patterns can I use to have a component-based approach in flask?

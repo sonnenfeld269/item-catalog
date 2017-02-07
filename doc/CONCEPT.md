@@ -22,6 +22,8 @@
 
 - item_catalog/
     - doc/                - all documentation-related files
+    - templates/          - all the template html files
+    - static/             - static files like css/js/images
     - basic_server.py     - using a simple HTTP Basic Server
     - project.py          - using Flask Framework
     - database_setup.py      - creates our database by ORM
@@ -33,7 +35,6 @@
   * Create db-model
   * Create a [database_setup file](../database_setup.py) using sqlalchemy
   * Create a [database_service file](../database_setup.py) for crud operations
-  * Connect database with project.py(sever) using [database_service.py](../database_service.py)
 
 3. View Layer
   * Create html templates like [display_all.html](../templates/display_all.html) using jinja2 inheritance
@@ -92,11 +93,11 @@ directory to see all the templates.
 
 *Example*
 
-|URL|METHOD           |POST/GET | ACTION |
-|---|-----------------|---------|--------|
-|'/','/items'|showAllData|GET|display all items and categories|
 
-**read as** *If the user goes to the url '/' or '/items' then call the method `showAllData()`*
+  |'/','/items'|showAllData|GET|display all items and categories|
+  |-|-|-|-|
+
+**read as** *If the user goes to the url `/` or `/items` then call the method `showAllData()`*
 
 Here you can see all necessary user actions:
 
@@ -123,7 +124,7 @@ As a template engine flask uses jinja2. So to map data from our server to html f
 
 ##### Code-Examples
 
-  1. Implementing **showAllData** action
+* Implementing **showAllData** action
 
   ```
   @app.route('/')
@@ -144,7 +145,7 @@ As a template engine flask uses jinja2. So to map data from our server to html f
       return render_template("display_all.html", categories = categories, items = items, countItems = num_items)
   ```
 
-  Above we can see that if the user calls the url */* or */items* then `showAllData()` will be executed.
+  Above we can see that if the user calls the url `/` or `/items` then `showAllData()` will be executed.
 
   communication to **database**, see below
 
@@ -161,7 +162,21 @@ As a template engine flask uses jinja2. So to map data from our server to html f
   return render_template("display_all.html", categories = categories, items = items, countItems = num_items)
   ```
 
-  2. Implementing **deleteItem** action
+* Implementing **deleteItem** action
+
+```
+@app.route('/<int:item_id>/delete', methods=['POST'])
+def removeItem(item_id):
+    """Deletes an item from the database."""
+
+    # delete item
+    deleteItem(item_id)
+
+    # redirect to showAllData
+    return redirect(url_for('showAllData'))
+```
+
+If the user triggers a post method with the url `/(int:item_id)/delete` then the item will be deleted.
 
 ## Message Flashing
 

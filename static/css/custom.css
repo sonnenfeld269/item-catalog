@@ -1,3 +1,13 @@
+.heading-color {
+  color: brown;
+}
+
+.heading-link,
+.heading-link:hover {
+  text-decoration:none;
+  color: inherit;
+}
+
 .content {
   padding: 20px;
 }
