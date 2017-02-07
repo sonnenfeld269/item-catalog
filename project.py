@@ -90,9 +90,8 @@ def editItem(category_name=None, item_id=None):
             item = Item()
             item.title = request.form['title']
             item.description = request.form['description']
-
             flash("Missing Title, Content or Category Name.", "danger")
-            return render_template('item/edit_item.html', item=item)
+            return render_template('item/edit_item.html', item=item, category_name=category_name, categories=readAllCategories())
 
 
 @app.route('/items/<int:item_id>/delete', methods=['POST'])
