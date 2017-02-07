@@ -45,10 +45,11 @@ def readItemsByName(category_name):
     return items
 
 
-def updateItem(id, title, description):
+def updateItem(id, title, description, category_name):
     item = session.query(Item).filter_by(id=id).one()
     item.title = title
     item.description = description
+    item.category_id = readCategoryByName(category_name).id
     session.add(item)
     session.commit()
 

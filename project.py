@@ -72,15 +72,27 @@ def addItem(category_name=None):
 @app.route('/<string:category_name>/items/<int:item_id>/edit', methods=['GET', 'POST'])
 def editItem(category_name=None, item_id=None):
     category_name = ""
+
     if request.method == "GET":
         item = readItemById(item_id)
         if not category_name:
             category_name = readCategoryById(item.category_id).name
-        return render_template('item/edit_item.html', item=item)
+        return render_template('item/edit_item.html', item=item, category_name=category_name, categories=readAllCategories())
     else:
-        updateItem(item_id, request.form['title'], request.form['description'])
-        flash("Item successfully edited!", "success")
-        return redirect(url_for('showDataByCategory', category_name=category_name))
+        if request.form['title'] and request.form['description'] and request.form['selected_category_name']:
+            updateItem(item_id, request.form['title'],
+                       request.form['description'],
+                       request.form['selected_category_name'])
+            flash("Item successfully edited!", "success")
+            return redirect(url_for('showDataByCategory', category_name=category_name))
+        else:
+            # TODO is this approach ok?
+            item = Item()
+            item.title = request.form['title']
+            item.description = request.form['description']
+
+            flash("Missing Title, Content or Category Name.", "danger")
+            return render_template('item/edit_item.html', item=item)
 
 
 @app.route('/items/<int:item_id>/delete', methods=['POST'])
@@ -133,8 +145,8 @@ def getAllItemsJSON(category_name=None):
 
     return jsonify(Items=[i.serialize for i in items])
 
-
 # Configuration
+
 
 def dbSetup(dbtype, dbname):
     engine = create_engine('%s:///%s' % (dbtype, dbname))
