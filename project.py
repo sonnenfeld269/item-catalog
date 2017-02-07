@@ -53,6 +53,12 @@ def showDataByCategory(category_name):
                            items=rendered_items)
 
 
+@app.route('/items/<int:item_id>')
+def showItem(item_id):
+    item = readItemById(item_id)
+    return render_template("item/single_item.html", item=item)
+
+
 @app.route('/items/new', methods=['POST'])
 @app.route('/<string:category_name>/items/new', methods=['POST'])
 def addItem(category_name=None):
@@ -77,21 +83,26 @@ def editItem(category_name=None, item_id=None):
         item = readItemById(item_id)
         if not category_name:
             category_name = readCategoryById(item.category_id).name
-        return render_template('item/edit_item.html', item=item, category_name=category_name, categories=readAllCategories())
+        return render_template('item/edit_item.html', item=item,
+                               category_name=category_name,
+                               categories=readAllCategories())
     else:
         if request.form['title'] and request.form['description'] and request.form['selected_category_name']:
             updateItem(item_id, request.form['title'],
                        request.form['description'],
                        request.form['selected_category_name'])
             flash("Item successfully edited!", "success")
-            return redirect(url_for('showDataByCategory', category_name=category_name))
+            return redirect(url_for('showDataByCategory',
+                                    category_name=category_name))
         else:
             # TODO is this approach ok?
             item = Item()
             item.title = request.form['title']
             item.description = request.form['description']
             flash("Missing Title, Content or Category Name.", "danger")
-            return render_template('item/edit_item.html', item=item, category_name=category_name, categories=readAllCategories())
+            return render_template('item/edit_item.html', item=item,
+                                   category_name=category_name,
+                                   categories=readAllCategories())
 
 
 @app.route('/items/<int:item_id>/delete', methods=['POST'])
