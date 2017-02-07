@@ -9,6 +9,7 @@ are special alchemy classes that correspondent with our tables in our db
 """
 Base = declarative_base()
 
+
 class Category(Base):
     """A category class mapping to our category table
 
@@ -18,9 +19,9 @@ class Category(Base):
 
     __tablename__ = 'category'
 
-    name = Column(String(80), nullable = False)
+    name = Column(String(80), nullable=False)
 
-    id = Column(Integer, primary_key = True)
+    id = Column(Integer, primary_key=True)
 
     @property
     def serialize(self):
@@ -28,6 +29,7 @@ class Category(Base):
             'name': self.name,
             'id': self.id
         }
+
 
 class Item(Base):
     """An item class mapping to our item table
@@ -38,9 +40,9 @@ class Item(Base):
 
     __tablename__ = 'item'
 
-    title = Column(String(80), nullable = False)
+    title = Column(String(80), nullable=False)
 
-    id = Column(Integer, primary_key = True)
+    id = Column(Integer, primary_key=True)
 
     description = Column(String(250))
 
