@@ -1,6 +1,6 @@
-<h2>Category</h2>
+<h2 class="heading-color">Category</h2>
 <ul class="nav nav-pills nav-stacked">
-    <li role="presentation" class="bg-info"><a href="{{url_for('showAllData')}}">All</a></li>
+    <li role="presentation"><a href="{{url_for('showAllData')}}">All</a></li>
     {% for c in categories %}
     <li role="presentation" {% if category_name==c.name %}class="active"{% endif %}><a class="cat-link" href="{{url_for('showDataByCategory',category_name=c.name)}}">{{c.name}}</a></li>
     {% endfor %}

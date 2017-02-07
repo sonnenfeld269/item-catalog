@@ -1,0 +1,8 @@
+{% extends "basic.html" %} {% block content %}
+<h2 class="heading-color">{{item.title}}</h2>
+<p>{{item.description}}</p>
+<a href="{{url_for('editItem',category_name=category_name,item_id=item.id)}}" class="btn btn-warning btn-xs edit-button">edit</a>
+<form class="item-form-button" method="post" action="{{url_for('removeItem',category_name=category_name,item_id=item.id)}}">
+    <button class="btn btn-danger btn-xs">delete</button>
+</form>
+{% endblock content %}
