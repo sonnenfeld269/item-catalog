@@ -165,8 +165,11 @@ def getCategoryByNameJSON(category_name):
     return jsonify(Category=category.serialize)
 
 # Item - API Endpoints
+# TODO is it possible to have all that API methods in a seperate python
+# file/module?
 
 
+@app.route('/items/JSON')
 @app.route('/<string:category_name>/items/JSON')
 def getAllItemsJSON(category_name=None):
     """Returns all items as json.
@@ -183,6 +186,22 @@ def getAllItemsJSON(category_name=None):
         items = readAllItems()
 
     return jsonify(Items=[i.serialize for i in items])
+
+
+@app.route('/items/<int:item_id>/JSON')
+@app.route('/<string:category_name>/items/<int:item_id>/JSON')
+def showItemJSON(category_name=None, item_id=None):
+    """Returns a single item as json.
+
+    Args:
+        category_name: category name as string
+        item_id: id of an item as int
+    Returns:
+        string: json string
+    """
+
+    item = readItemById(item_id)
+    return jsonify(item.serialize)
 
 # Configuration
 
