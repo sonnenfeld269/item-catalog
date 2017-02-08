@@ -43,6 +43,7 @@ def showDataByCategory(category_name):
                                           categories=categories,
                                           category_name=category_name)
 
+    show_form = request.args.get('show_form')
     rendered_items = render_template("item/show_items.html",
                                      items=items, categories=categories,
                                      category_name=category_name,
@@ -59,19 +60,39 @@ def showItem(item_id):
     return render_template("item/single_item.html", item=item)
 
 
-@app.route('/items/new', methods=['POST'])
-@app.route('/<string:category_name>/items/new', methods=['POST'])
+@app.route('/items/new', methods=['GET', 'POST'])
+@app.route('/<string:category_name>/items/new', methods=['GET', 'POST'])
 def addItem(category_name=None):
+    """Render and return an add-item form if the request is GET.
+    If there is a POST request, then add the item to the database.
 
-    if request.method == "POST":
-        if not category_name:
+    Args:
+        category_name: name of the category
+
+    """
+
+    if request.method == "GET":
+
+        categories = readAllCategories()
+
+        if category_name:
+            return render_template('item/add_item.html',
+                                   category_name=category_name,
+                                   categories=categories)
+        else:
+            return render_template('item/add_item.html',
+                                   categories=categories)
+    else:
+        if request.form['title'] and request.form['description']:
             category_name = request.form['selected_category_name']
-
-        category_id = readCategoryByName(category_name).id
-        item = createItem(request.form['title'], request.form[
-                          'description'], category_id)
-        flash("Item successfully added!", "success")
-        return redirect(url_for('showDataByCategory', category_name=category_name))
+            category_id = readCategoryByName(category_name).id
+            item = createItem(request.form['title'], request.form[
+                              'description'], category_id)
+            flash("Item successfully added!", "success")
+            return redirect(url_for('showDataByCategory', category_name=category_name))
+        else:
+            flash("Missing Title, Content or Category Name.", "danger")
+            return redirect(url_for('showDataByCategory', category_name=category_name))
 
 
 @app.route('/items/<int:item_id>/edit', methods=['GET', 'POST'])

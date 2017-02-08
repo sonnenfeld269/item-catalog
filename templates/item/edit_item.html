@@ -19,8 +19,8 @@
                 <label class="control-label col-lg-2">Category</label>
                 <div class="col-lg-10">
                     <select class="form-control" id="select" name="selected_category_name">
-                  {% for c in categories %}
-                    <option {% if category_name == c.name %}selected{% endif %}>{{c.name}}</option>
+                  {% for cat in categories %}
+                    <option {% if category_name == cat.name %}selected{% endif %}>{{cat.name}}</option>
                   {% endfor %}
                   </select>
                 </div>

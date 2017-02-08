@@ -7,39 +7,8 @@
     {% endif %}
     {{ countItems }}
   </small>
-  <button type="button" class="btn btn-primary btn-xs add-button">Add Item</button>
+  <a href="{{url_for('addItem',category_name=category_name)}}" class="btn btn-primary btn-xs edit-button">Add Item</a>
 </h2>
-
-<div class="add-form well">
-    <form method="post" action="{{url_for('addItem',category_name=category_name)}}">
-        <div class="button-section">
-            <div class="form-group">
-                <button type="submit" class="btn btn-success btn-xs save-button">Save</button>
-                <button type="reset" class="btn btn-info btn-xs cancel-button">Cancel</button>
-            </div>
-        </div>
-        <div class="input-section">
-            <div class="form-group">
-                <label>Title:</label>
-                <input name="title" type="text" class="form-control" id="title">
-            </div>
-            <div class="form-group">
-                <label>Description:</label>
-                <textarea name="description" type="text" class="form-control" rows="5"></textarea>
-            </div>
-            <div class="form-group">
-                <label>Category:</label>
-                <select class="form-control" id="select" name="selected_category_name" {% if category_name %}disabled{% endif %}>
-                  {% for c in categories %}
-                  <option {% if category_name == c.name %}selected{% endif %}>{{c.name}}</option>
-                  {% endfor %}
-                </select>
-
-            </div>
-        </div>
-
-    </form>
-</div>
 
 <ul class="list-group">
     {% for i in items %}
