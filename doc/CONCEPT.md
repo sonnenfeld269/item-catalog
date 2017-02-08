@@ -65,7 +65,7 @@ Check [database_setup file](../database_setup.py) for code and documentation.
 
 If we run this file with `python database_setup.py` then it creates our
 **category_item.db** file, which contains our `CREATE` statements.
-7
+
 #### Implement ORM
 
 Now we need a module to do CRUD operations on our db. For that we an ORM called
@@ -93,9 +93,10 @@ directory to see all the templates.
 
 *Example*
 
+|URL         |METHOD     |POST/GET |ACTION                          |
+|------------|-----------|---------|--------------------------------|
+|'/','/items'|showAllData|GET      |display all items and categories|
 
-  |'/','/items'|showAllData|GET|display all items and categories|
-  |-|-|-|-|
 
 **read as** *If the user goes to the url `/` or `/items` then call the method `showAllData()`*
 
@@ -106,7 +107,7 @@ Here you can see all necessary user actions:
 |'/','/items'|showAllData|GET|display all items and categories|
 |'(string:category_name)/items'|showDataByCategory|GET|display items by category|
 |'(string:category_name)/items/new'|createItem|GET/POST|display create item form or submit|
-|'(string:category_name)/items/(int:item_id)'|showItem|GET|display item|
+|'(string:category_name)/items/(int:item_id)'|showItem|GET|display display a single item|
 |'(string:category_name)/items/(int:item_id)/edit'|editItem|GET/POST|display or edit item|
 |'(string:category_name)/items/(int:item_id)/delete'|deleteItem|POST|display or edit item|
 

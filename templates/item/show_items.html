@@ -17,7 +17,7 @@
             <div class="row">
                 <div class="col-md-9">
                     <h4 class="list-group-item-heading">
-                      <a href="{{url_for('showItem',item_id=i.id)}}">{{i.title}}</a>
+                      <a href="{{url_for('showItem',category_name=category_name,item_id=i.id)}}">{{i.title}}</a>
                     </h4>
                     <p class="list-group-item-text">{{i.description}}</p>
                 </div>

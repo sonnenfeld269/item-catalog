@@ -55,9 +55,17 @@ def showDataByCategory(category_name):
 
 
 @app.route('/items/<int:item_id>')
-def showItem(item_id):
+@app.route('/<string:category_name>/items/<int:item_id>')
+def showItem(category_name=None, item_id=None):
+    """Show a single item"""
+
     item = readItemById(item_id)
-    return render_template("item/single_item.html", item=item)
+    if not category_name:
+        category_name = readCategoryById(item.category_id).name
+
+    return render_template("item/single_item.html",
+                           category_name=category_name,
+                           item=item)
 
 
 @app.route('/items/new', methods=['GET', 'POST'])
